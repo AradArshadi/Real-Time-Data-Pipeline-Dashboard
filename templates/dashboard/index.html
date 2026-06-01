@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Dashboard</title>
+</head>
+<body>
+    <h1>Weather Dashboard</h1>
+    <table border="1">
+        <tr>
+            <th>City</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
+            <th>Description</th>
+            <th>Wind Speed</th>
+        </tr>
+        {% for city, record in data.items %}
+        <tr>
+            <td>{{ city }}</td>
+            <td>{{ record.temperature }}°C</td>
+            <td>{{ record.humidity }}%</td>
+            <td>{{ record.description }}</td>
+            <td>{{ record.wind_speed }} m/s</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
