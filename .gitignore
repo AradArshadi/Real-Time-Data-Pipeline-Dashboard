@@ -216,3 +216,20 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Celery runtime files
+celerybeat-schedule*
+
+# Logs
+logs/*.log
+
+# Local database
+db.sqlite3
