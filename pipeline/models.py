@@ -7,6 +7,7 @@ class WeatherRecord(models.Model):
     description = models.CharField(max_length=200)
     wind_speed = models.FloatField()
     recorded_at = models.DateTimeField(auto_now_add=True)
+    pressure = models.FloatField()
 
     class Meta:
         ordering = ['-recorded_at']

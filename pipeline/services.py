@@ -17,7 +17,8 @@ def fetch_weather(city):
         temperature=data['main']['temp'],
         humidity=data['main']['humidity'],
         description=data['weather'][0]['description'],
-        wind_speed=data['wind']['speed']
+        wind_speed=data['wind']['speed'],
+        pressure=data['main']['pressure'],
     )
 
 def fetch_all_cities():

@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import redis
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-change-this-in-production-xyz123'
+CELERY_BROKER_URL="redis://127.0.0.1:6379/0"
 
 DEBUG = True
 
