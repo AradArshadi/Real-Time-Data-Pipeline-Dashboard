@@ -1,137 +1,74 @@
-# Fixes and Run Guide
+# Professional Upgrade Notes
 
-## What was fixed
+This version is the upgraded portfolio-ready version of the project.
 
-### 1. Weather data should not require manual shell insertion
+## Major Improvements
 
-Before, data collection worked only when you manually ran:
+1. Docker Compose environment
+2. PostgreSQL + Redis + Django + Celery Worker + Celery Beat
+3. Professional data model:
+   - City
+   - WeatherRecord
+   - CollectionRun
+4. API documentation with Swagger:
+   - /api/docs/
+   - /api/redoc/
+5. More API endpoints:
+   - /api/weather/
+   - /api/cities/
+   - /api/runs/
+   - /api/health/
+6. Dashboard analytics:
+   - latest pipeline run
+   - freshness status
+   - latest weather per city
+   - temperature trend
+   - humidity trend
+   - pressure trend
+   - recent records
+   - CSV export
+7. Logging:
+   - logs/app.log
+   - logs/celery.log
+8. Tests:
+   - model test
+   - service test with mocked API
+   - dashboard test
+   - API test
+9. GitHub Actions CI:
+   - migration check
+   - test run
+
+## Most Important Commands
 
 ```bash
-python manage.py shell
-from pipeline.services import fetch_all_cities
-fetch_all_cities()
+python manage.py migrate
+python manage.py collect_weather
+python manage.py runserver
 ```
 
-The project already had a Celery schedule, but automatic collection requires **Celery Beat** and **Celery Worker** to run at the same time.
-
-Use three terminals:
-
-### Terminal 1: Redis
-
-```bash
-redis-server
-```
-
-On Windows, Redis is often run through Docker or WSL.
-
-### Terminal 2: Celery Worker
+For automatic collection locally:
 
 ```bash
 celery -A core worker --loglevel=info --pool=solo
-```
-
-### Terminal 3: Celery Beat
-
-```bash
 celery -A core beat --loglevel=info
 ```
 
-Now the task in `core/celery.py` will automatically send the weather collection task every hour.
-
-For a manual one-command test without opening Django shell, use:
+For Docker:
 
 ```bash
+docker compose up --build
+```
+
+## Existing Old Database Warning
+
+This PRO version changes the database schema. If your old database was created with the MVP version, create a fresh database before running this version.
+
+Clean reset example:
+
+```bash
+dropdb -U postgres weather_pipeline
+createdb -U postgres weather_pipeline
+python manage.py migrate
 python manage.py collect_weather
 ```
-
----
-
-### 2. Logging was added
-
-Logging is now configured in `core/settings.py`.
-
-Logs are written to:
-
-```text
-logs/app.log
-logs/celery.log
-```
-
-The project now logs:
-
-- when dashboard pages are opened
-- when CSV export is requested
-- when weather collection starts
-- success/failure for each city
-- OpenWeatherMap API failures
-- Celery task start/finish/retry events
-
----
-
-### 3. API error handling was added
-
-`pipeline/services.py` now uses:
-
-```python
-response.raise_for_status()
-timeout=10
-```
-
-So API failures are handled and logged instead of silently crashing the task.
-
----
-
-### 4. Template date bug fixed
-
-The dashboard used:
-
-```django
-{{ item.created_at }}
-```
-
-But the model field is:
-
-```python
-recorded_at
-```
-
-So it was fixed to:
-
-```django
-{{ item.recorded_at|date:"Y-m-d H:i" }}
-```
-
----
-
-### 5. Environment variables added
-
-Secrets were removed from `settings.py`.
-
-Use `.env.example` as a template and create your own `.env` file:
-
-```bash
-copy .env.example .env
-```
-
-Then edit `.env` and add your real PostgreSQL password and OpenWeatherMap API key.
-
----
-
-### 6. Showcase architecture graph added
-
-The project now includes:
-
-```text
-docs/architecture.png
-```
-
-This graph shows the relationship between:
-
-- Celery Beat
-- Celery Worker
-- service layer
-- OpenWeatherMap API
-- PostgreSQL database
-- Django dashboard
-- Django REST Framework API
-- settings/logging
