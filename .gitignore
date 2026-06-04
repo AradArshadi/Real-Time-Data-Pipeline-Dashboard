@@ -18,6 +18,7 @@ staticfiles/
 
 # Logs
 logs/*.log
+*.docx
 
 # Celery runtime
 celerybeat-schedule*
